@@ -14,3 +14,38 @@ export async function sendMessage({ token, chatId, text }) {
   }
   return data.result;
 }
+
+export async function pollForReply({
+  token,
+  chatId,
+  sentMessageId,
+  intervalMs = 2000,
+  timeoutMs = 120000,
+}) {
+  const url = `${BASE_URL}${token}/getUpdates`;
+  let offset = 0;
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    const res = await fetch(`${url}?offset=${offset}&timeout=1`);
+    const data = await res.json();
+
+    if (data.ok && data.result.length > 0) {
+      for (const update of data.result) {
+        offset = update.update_id + 1;
+        const msg = update.message;
+        if (
+          msg &&
+          String(msg.chat.id) === String(chatId) &&
+          msg.message_id > sentMessageId
+        ) {
+          return msg.text.trim().toLowerCase();
+        }
+      }
+    }
+
+    await new Promise((r) => setTimeout(r, intervalMs));
+  }
+
+  return null;
+}
