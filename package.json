@@ -1,0 +1,16 @@
+{
+  "name": "notifybot",
+  "version": "1.0.0",
+  "description": "CLI that wraps commands and notifies you on Telegram when they finish",
+  "type": "module",
+  "bin": {
+    "notifybot": "./bin/notifybot.js"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}
