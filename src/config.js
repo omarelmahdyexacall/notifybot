@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 export function loadConfig() {
   try {
     const envPath = resolve(process.cwd(), ".env");
-    const lines = readFileSync(envPath, "utf-8").split("\n");
+    const lines = readFileSync(envPath, "utf-8").split(/\r?\n/);
     for (const line of lines) {
       const match = line.match(/^([^#=]+)=(.*)$/);
       if (match) {

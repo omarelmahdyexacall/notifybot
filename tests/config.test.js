@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { loadConfig } from "../src/config.js";
+import * as fs from "node:fs";
+
+vi.mock("node:fs", async () => {
+  const actual = await vi.importActual("node:fs");
+  return { ...actual, readFileSync: vi.fn(() => { throw new Error("ENOENT"); }) };
+});
 
 describe("loadConfig", () => {
   const originalEnv = process.env;
@@ -7,6 +13,8 @@ describe("loadConfig", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     process.env = { ...originalEnv };
+    // Default: no .env file found
+    fs.readFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
   });
 
   it("reads TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID from env", () => {
